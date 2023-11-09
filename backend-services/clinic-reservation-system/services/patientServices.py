@@ -5,6 +5,7 @@ from config import mysql
 from flask import jsonify
 from flask import request
 from services.authService import patient, checkPatientExistence
+from services.doctorServices import checkSlotExistence
 
 
 def createAppointment():
@@ -33,6 +34,8 @@ def createAppointment():
                     doctorID = row["id"]
                     # check if doctor id != id so doctor is not found
                     if checkDoctorSlotExistence(SlotDate, SlotHour, doctorID):
+                        # what if another patientID had an appointment with the same doctor in diff slot
+                        # what we will do here !
                         sqlQuery2 = "UPDATE Doctor SET patientID= %s WHERE id= %s"
                         bindData2 = (patientID, doctorID)
                         cursor.execute(sqlQuery2, bindData2)
@@ -61,7 +64,81 @@ def createAppointment():
 
 
 def updateAppointment():
-    return {}
+    try:
+        Json = request.json
+        doctorName = Json['doctor']
+        SlotDate = Json['slotDate']
+        SlotHour = Json['slotHour']
+        newDoctorName = Json['newDoctor']
+        newSlotDate = Json['newSlotDate']
+        newSlotHour = Json['newSlotHour']
+        patientID = getPatientID()
+        if patientID is None:
+            response = jsonify('You should log in first to update your Appointment')
+            response.status_code = 200
+            return response
+        else:
+            if doctorName and SlotDate and SlotHour and newDoctorName and newSlotDate and newSlotHour and patientID and request.method == 'PUT':
+                # Convert slot date in JSON response to the same format as the request
+                SlotDate = datetime.datetime.strptime(SlotDate, "%Y-%m-%d").strftime("%Y-%m-%d")
+                if not (checkAppointmentExistence(SlotDate, SlotHour)):
+                    conn = mysql.connect()
+                    cursor = conn.cursor(pymysql.cursors.DictCursor)
+                    sqlQuery1 = "SELECT id FROM Doctor WHERE name= %s"
+                    bindData1 = doctorName
+                    cursor.execute(sqlQuery1, bindData1)
+                    row1 = cursor.fetchone()
+                    doctorID = row1["id"]
+                    sqlQuery2 = "SELECT id FROM Doctor WHERE name= %s"
+                    bindData2 = newDoctorName
+                    cursor.execute(sqlQuery2, bindData2)
+                    row2 = cursor.fetchone()
+                    newDoctorID = row2["id"]
+                    newSlotDate = datetime.datetime.strptime(newSlotDate, "%Y-%m-%d").strftime("%Y-%m-%d")
+                    if checkDoctorSlotExistence(newSlotDate, newSlotHour, newDoctorID):
+                        sqlQuery3 = ("UPDATE Slots "
+                                     "SET patientID =%s "
+                                     "WHERE slotDate =%s AND slotHour =%s AND doctorID =%s")
+                        bindData3 = (patientID, newSlotDate, newSlotHour, newDoctorID)
+                        cursor.execute(sqlQuery3, bindData3)
+                        sqlQuery4 = ("UPDATE Slots "
+                                     "SET patientID = NULL "
+                                     "WHERE slotDate =%s AND slotHour =%s AND doctorID =%s")
+                        bindData4 = (SlotDate, SlotHour, doctorID)
+                        cursor.execute(sqlQuery4, bindData4)
+                        # if the same doctor it overwrites the field
+                        sqlQuery5 = ("UPDATE Doctor "
+                                     "SET patientID = %s "
+                                     "WHERE id =%s")
+                        bindData5 = (patientID, newDoctorID)
+                        cursor.execute(sqlQuery5, bindData5)
+                        sqlQuery6 = "SELECT COUNT(*) FROM Slots WHERE doctorID = %s AND patientID =%s"
+                        bindData6 = (doctorID, patientID)
+                        cursor.execute(sqlQuery6, bindData6)
+                        numOfAppointments = cursor.fetchone()['COUNT(*)']
+                        if numOfAppointments < 1:
+                            sqlQuery7 = ("UPDATE Doctor "
+                                         "SET patientID = NULL "
+                                         "WHERE id= %s AND patientID= %s")
+                            bindData7 = (doctorID, patientID)
+                            cursor.execute(sqlQuery7, bindData7)
+                        conn.commit()
+                        cursor.close()
+                        conn.close()
+                        response = jsonify('Appointment updated successfully')
+                        response.status_code = 200
+                        return response
+                    else:
+                        response = jsonify('Doctor or Slot is NOT found, view available slots')
+                        response.status_code = 200
+                        return response
+                else:
+                    response = jsonify('Appointment is not found, please create it first')
+                    response.status_code = 200
+                    return response
+    except Exception as err:
+        traceback.print_exc()
+        print(err)
 
 
 def cancelAppointment():
@@ -130,19 +207,69 @@ def viewAppointment():
                 appointmentRows = cursor.fetchall()
                 cursor.close()
                 conn.close()
-                # if not (checkAppointmentExistence(SlotDate, SlotHour)):
-                response = jsonify(appointmentRows)
+                for appointmentRow in appointmentRows:
+                    SlotDate = str(appointmentRow["slotDate"])
+                    SlotHour = str(appointmentRow["slotHour"])
+                    if not (checkAppointmentExistence(SlotDate, SlotHour)):
+                        response = jsonify(appointmentRows)
+                        response.status_code = 200
+                        return response
+                response = jsonify('No Patient Appointments to show')
                 response.status_code = 200
                 return response
-                # else:
-                #     response = jsonify('No Patient Appointments to show')
-                #     response.status_code = 200
-                #     return response
+            return {'No Patient Exist'}
+    except Exception as err:
+        traceback.print_exc()
+        print(err)
+
+
+def viewAvailableDoctorSlots(doctorName):
+    try:
+        # Json = request.json
+        # doctorName = Json['doctor']
+        patientID = getPatientID()
+        if patientID is None:
+            response = jsonify('You should log in first to view Doctor Slots')
+            response.status_code = 200
+            return response
+        else:
+            if checkPatientExistence():
+                conn = mysql.connect()
+                cursor = conn.cursor(pymysql.cursors.DictCursor)
+                sqlQuery1 = "SELECT id FROM Doctor WHERE name = %s"
+                bindData1 = doctorName
+                cursor.execute(sqlQuery1, bindData1)
+                row = cursor.fetchone()
+                if row is None:
+                    response = jsonify('Doctor is not found')
+                    response.status_code = 200
+                    return response
+                else:
+                    doctorID = row["id"]
+                    sqlQuery2 = "SELECT slotDate, slotHour FROM Slots WHERE doctorID =%s AND patientID is NULL"
+                    bindData2 = doctorID
+                    cursor.execute(sqlQuery2, bindData2)
+                    docSlotRows = cursor.fetchall()
+                    cursor.close()
+                    conn.close()
+                    for docSlotRow in docSlotRows:
+                        SlotDate = str(docSlotRow["slotDate"])
+                        SlotHour = str(docSlotRow["slotHour"])
+                        if checkDoctorSlotExistence(SlotDate, SlotHour, doctorID):
+                            response = jsonify(docSlotRows)
+                            response.status_code = 200
+                            return response
+                response = jsonify('No Available Slots to show')
+                response.status_code = 200
+                return response
 
             return {'No Patient Exist'}
     except Exception as err:
         traceback.print_exc()
         print(err)
+
+
+# needs to be in another file
 
 
 def getPatientID():

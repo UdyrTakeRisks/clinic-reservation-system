@@ -1,4 +1,3 @@
-import json
 from services.patientServices import *
 
 
@@ -25,6 +24,10 @@ def cancelPatientAppointment():
 
 def viewPatientAppointment():
     return viewAppointment()
+
+
+def viewDoctorSlot(doctorName):
+    return viewAvailableDoctorSlots(doctorName)
 
 
 

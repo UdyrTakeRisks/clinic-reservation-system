@@ -1,6 +1,4 @@
-import json
 from services.doctorServices import *
-from services.authService import *
 
 
 def doctorIndex():

@@ -41,7 +41,41 @@ def createSlots():
 
 
 def updateSlots():
-    return {}
+    try:
+        Json = request.json
+        SlotDate = Json['slotDate']
+        SlotHour = Json['slotHour']
+        newSlotDate = Json['newSlotDate']
+        newSlotHour = Json['newSlotHour']
+        docID = getDoctorID()
+        if docID is None:
+            response = jsonify('You should log in first to update your slots')
+            response.status_code = 200
+            return response
+        else:
+            if SlotDate and SlotHour and newSlotDate and newSlotHour and docID and request.method == 'PUT':
+                # Convert slot date in JSON response to the same format as the request
+                SlotDate = datetime.datetime.strptime(SlotDate, "%Y-%m-%d").strftime("%Y-%m-%d")
+                if not (checkSlotExistence(SlotDate, SlotHour)):
+                    conn = mysql.connect()
+                    cursor = conn.cursor(pymysql.cursors.DictCursor)
+                    sqlQuery = ("UPDATE Slots "
+                                "SET slotDate =%s , slotHour =%s "
+                                "WHERE slotDate =%s AND slotHour =%s AND doctorID =%s")
+                    bindData = (newSlotDate, newSlotHour, SlotDate, SlotHour, docID)
+                    cursor.execute(sqlQuery, bindData)
+                    conn.commit()
+                    cursor.close()
+                    conn.close()
+                    response = jsonify('Slot updated successfully')
+                    response.status_code = 200
+                    return response
+                else:
+                    response = jsonify('Slot is not found, please create it first')
+                    response.status_code = 200
+                    return response
+    except Exception as err:
+        print(err)
 
 
 def cancelSlots():
@@ -100,6 +134,9 @@ def viewSlots():
             return {'No Slots to show'}
     except Exception as err:
         print(err)
+
+
+# needs to be in another file
 
 
 def checkSlotExistence(SlotDate, SlotHour):
