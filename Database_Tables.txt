@@ -1,0 +1,39 @@
+
+Table Patient
+
+CREATE TABLE Patient(
+                     id integer NOT NULL AUTO_INCREMENT 
+                   , name varchar(50)
+                   , email varchar(100)
+                   , password varchar(25)
+                   , PRIMARY KEY (id) 
+                   );
+
+
+Table Doctor 
+
+CREATE TABLE Doctor(
+                    id integer NOT NULL AUTO_INCREMENT  
+                  , name varchar(50)
+                  , email varchar(100)
+                  , password varchar(25)
+                  , patientID integer
+                  , PRIMARY KEY (id)
+                  , FOREIGN KEY (patientID) REFERENCES Patient(id)
+                  );
+
+
+Table Slots
+
+CREATE TABLE Slots(
+                     id integer NOT NULL AUTO_INCREMENT  
+                   , slotDate date
+                   , slotHour CHAR(5)
+                   , doctorID integer
+                   , patientID integer
+                   , PRIMARY KEY (id)
+                   , FOREIGN KEY (doctorID) REFERENCES Doctor(id)
+                   , FOREIGN KEY (patientID) REFERENCES Patient(id)
+                   );
+                   
+
