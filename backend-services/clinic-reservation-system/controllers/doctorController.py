@@ -26,4 +26,8 @@ def viewDoctorSlots():
     return viewSlots()
 
 
+def getNames():
+    return getDoctorNames()
+
+
 

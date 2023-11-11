@@ -1,9 +1,10 @@
 import datetime
 import pymysql.cursors
+from services.helpers import *
 from config import mysql
 from flask import jsonify
 from flask import request
-from services.authService import doctor, checkDoctorExistence
+from services.authService import checkDoctorExistence
 
 
 def createSlots():
@@ -136,37 +137,17 @@ def viewSlots():
         print(err)
 
 
-# needs to be in another file
-
-
-def checkSlotExistence(SlotDate, SlotHour):
+def getDoctorNames():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        sqlQuery = "SELECT slotDate, slotHour, doctorID FROM Slots"
+        sqlQuery = "SELECT name FROM Doctor"
         cursor.execute(sqlQuery)
-        rows = cursor.fetchall()
-        for row in rows:
-            if SlotDate == str(row["slotDate"]) and SlotHour == row["slotHour"] and getDoctorID() == row["doctorID"]:
-                return False
+        docRows = cursor.fetchall()
+        response = jsonify(docRows)
+        response.status_code = 200
+        cursor.close()
         conn.close()
-    except Exception as err:
-        print(err)
-    return True
-
-
-def getDoctorID():
-    try:
-        if checkDoctorExistence():
-            conn = mysql.connect()
-            cursor = conn.cursor(pymysql.cursors.DictCursor)
-            sqlQuery = "SELECT id FROM Doctor WHERE name =%s AND password =%s"
-            bindData = (doctor.getName(), doctor.getPassword())
-            cursor.execute(sqlQuery, bindData)
-            row = cursor.fetchone()
-            doctorID = row["id"]
-            conn.close()
-            return doctorID
-        return None
+        return response
     except Exception as err:
         print(err)

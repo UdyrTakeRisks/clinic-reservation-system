@@ -127,6 +127,9 @@ def showMessage():
     return response
 
 
+# auth helpers
+
+
 def checkDoctorExistence():
     try:
         conn = mysql.connect()
