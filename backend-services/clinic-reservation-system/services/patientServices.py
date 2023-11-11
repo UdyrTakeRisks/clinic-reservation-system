@@ -4,6 +4,7 @@ import pymysql.cursors
 from flask import jsonify
 from flask import request
 from services.helpers import *
+from controllers.messaging.send import notifyDoctor
 
 
 def createAppointment():
@@ -47,6 +48,7 @@ def createAppointment():
                         conn.close()
                         response = jsonify('Appointment added successfully')
                         response.status_code = 200
+                        notifyDoctor(doctorID, patientID, "ReservationCreated")
                         return response
                     else:
                         response = jsonify('Slot is not found')
@@ -125,6 +127,10 @@ def updateAppointment():
                         conn.close()
                         response = jsonify('Appointment updated successfully')
                         response.status_code = 200
+                        # notify old doctor
+                        notifyDoctor(doctorID, patientID, "ReservationUpdated")
+                        # notify new doctor
+                        notifyDoctor(newDoctorID, patientID, "ReservationCreated")
                         return response
                     else:
                         response = jsonify('Doctor or Slot is NOT found, view available slots')
@@ -170,6 +176,19 @@ def cancelAppointment():
                     sqlQuery3 = "UPDATE Doctor SET patientID = NULL WHERE name= %s AND patientID= %s"
                     bindData3 = (DoctorName, patientID)
                     cursor.execute(sqlQuery3, bindData3)
+
+                sqlQuery4 = "SELECT id FROM Doctor WHERE name = %s"
+                bindData4 = DoctorName
+                cursor.execute(sqlQuery4, bindData4)
+                row = cursor.fetchone()
+                if row is None:
+                    response = jsonify('Doctor is not found')
+                    response.status_code = 200
+                    return response
+                else:
+                    doctorID = row["id"]
+                    notifyDoctor(doctorID, patientID, "ReservationCancelled")
+
                 conn.commit()
                 cursor.close()
                 conn.close()

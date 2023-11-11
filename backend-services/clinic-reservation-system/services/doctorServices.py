@@ -135,3 +135,19 @@ def viewSlots():
             return {'No Slots to show'}
     except Exception as err:
         print(err)
+
+
+def getDoctorNames():
+    try:
+        conn = mysql.connect()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        sqlQuery = "SELECT name FROM Doctor"
+        cursor.execute(sqlQuery)
+        docRows = cursor.fetchall()
+        response = jsonify(docRows)
+        response.status_code = 200
+        cursor.close()
+        conn.close()
+        return response
+    except Exception as err:
+        print(err)

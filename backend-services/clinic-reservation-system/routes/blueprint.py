@@ -2,6 +2,7 @@ from flask import Blueprint
 from controllers.authController import *
 from controllers.doctorController import *
 from controllers.patientController import *
+from controllers.messaging.receive import *
 
 blueprint = Blueprint('blueprint', __name__)
 
@@ -21,6 +22,10 @@ blueprint.route('/view/AvailableSlots/<string:doctorName>', methods=['GET'])(vie
 blueprint.route('/view/patientAppointment', methods=['GET'])(viewPatientAppointment)
 blueprint.route('/update/patientAppointment', methods=['PUT'])(updatePatientAppointment)
 blueprint.route('/cancel/patientAppointment', methods=['DELETE'])(cancelPatientAppointment)
+
+blueprint.route('/view/doctorNames', methods=['GET'])(getNames)
+
+blueprint.route('/notify/doctor', methods=['GET'])(getPatientMessages)
 
 blueprint.errorhandler(404)(showMessage)
 
