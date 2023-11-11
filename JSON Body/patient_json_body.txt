@@ -1,0 +1,34 @@
+
+http://127.0.0.1:5000/clinic/signin/patient
+
+{
+  "name": "Ali",
+  "password": "678patient"
+}
+
+
+http://127.0.0.1:5000/clinic/create/patientAppointment
+  
+
+{
+  "doctor": "Ahmed",
+  "slotDate": "2023-10-12",
+  "slotHour": "5:00 PM"
+}
+  
+  
+http://127.0.0.1:5000/clinic/cancel/patientAppointment   
+
+
+{
+  "doctor": "Ahmed",
+  "slotDate": "2023-10-12",
+  "slotHour": "5:00 PM"
+}
+
+
+http://127.0.0.1:5000/clinic/view/patientAppointment 
+
+
+
+
