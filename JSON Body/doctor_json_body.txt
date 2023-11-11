@@ -1,0 +1,60 @@
+
+http://127.0.0.1:5000/clinic/signin/doctor
+
+{
+  "name": "Ahmed",
+  "email": "ahmedismail509@yahoo.com",
+  "password": "123doctor"
+}
+
+{
+  "name": "Mohamed",
+  "email": "mohamed@gmail.com",
+  "password": "456patient"
+}
+
+{
+  "name": "Mohamed",
+  "email": "mohamed@gmail.com",
+  "password": "456doctor"
+}
+ 
+http://127.0.0.1:5000/clinic/create/doctorSlot 
+
+
+{
+  "slotDate": "2023-10-11",
+  "slotHour": "1:00 PM"
+}
+
+{
+  "slotDate": "2023-10-14",
+  "slotHour": "6:00 PM"
+}
+
+
+http://127.0.0.1:5000/clinic/view/doctorSlot
+ 
+ 
+http://127.0.0.1:5000/clinic/cancel/doctorSlot 
+
+
+{
+  "slotDate": "2023-10-5",
+  "slotHour": "10:00 PM"
+}
+
+
+http://127.0.0.1:5000/clinic/update/doctorSlot 
+
+
+{
+  "slotDate": "2023-10-12",
+  "slotHour": "5:00 PM",
+  
+  "newSlotDate": "2023-10-15",
+  "newSlotHour": "9:00 PM"
+}
+
+ 
+ 
