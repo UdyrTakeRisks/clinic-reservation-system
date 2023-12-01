@@ -1,0 +1,82 @@
+
+
+podman network create ui-net
+
+podman network create api-net
+
+podman network create messaging-net
+
+podman network ls
+
+
+podman volume create clinic-vol
+
+podman volume create rabbitmq-vol
+
+podman volume ls
+
+
+podman build -t clinic-messaging-mq:1.0 .
+
+podman build -t clinic-backend:1.0 .
+
+podman build -t clinic-mysql-db:1.0 .
+
+
+podman run -d --name clinic-db-app -p 3306:3306 -e MYSQL_USER='ahmed' -e MYSQL_PASSWORD='123' -e MYSQL_DATABASE='clinicdb' -e MYSQL_ROOT_PASSWORD='123' --network api-net -v clinic-vol:/var/lib/mysql/data -v ./sqlfile:/tmp/clinic-db localhost/clinic-mysql-db:1.0
+
+
+podman run -d --name clinic-rabbitmq --net messaging-net -p 5672:5672 -v rabbitmq-vol:/var/lib/rabbitmq clinic-messaging-mq:1.0
+
+
+podman run -d --name clinic-backend-app -e DB_HOST=clinic-db-app -p 5000:5000 --network api-net,ui-net,messaging-net localhost/clinic-backend:1.0 
+
+
+podman logs clinic-rabbitmq
+
+podman logs clinic-backend-app
+
+podman logs clinic-db-app
+
+podman rm -f clinic-db-app
+
+podman rm -f clinic-backend-app
+
+podman rm -f clinic-rabbitmq
+
+podman exec -it clinic-backend-app /bin/bash
+
+podman exec -it clinic-backend-app curl 127.0.0.1:5000/clinic/doctor
+
+podman inspect clinic-rabbitmq
+
+podman inspect clinic-backend-app
+
+podman inspect clinic-db-app
+
+
+podman ps
+
+podman start --all
+
+To run a Bash script on Linux:
+
+./run_containers.sh
+
+To run a Bash script on Windows using Git:
+
+bash run_containers.sh
+
+
+Export db
+
+mysqldump -u ahmed -p mysql Doctor Patient Slots > clinicdumpdb.sql
+
+import db
+
+mysql -u ahmed -p clinicdb < clinicdumpdb.sql
+
+
+podman cp src hostpath dest container:path
+
+
