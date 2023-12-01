@@ -1,0 +1,90 @@
+<!-- doctor-page.component.html -->
+
+<div class="doctor-page-container">
+  <h2>{{ welcomeMessage }}</h2>
+
+<!-- Notification -->
+<div class="notification-container">
+  <button class="notification-button" (click)="fetchDoctorNotifications()">Fetch Notifications</button>
+
+  <!-- Display doctor notifications -->
+  <div class="notification-list">
+    <ng-container *ngIf="doctorNotifications.length > 0; else noNotifications">
+      <ul>
+        <li *ngFor="let notification of doctorNotifications">
+          {{ notification.Operation }} - Patient ID: {{ notification.patientId }}
+        </li>
+      </ul>
+    </ng-container>
+
+    <ng-template #noNotifications>
+      <div *ngIf="!fetchingNotifications">
+        No new notifications.
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+
+  <!-- Doctor's slots table -->
+  <div>
+    <h3>Your Available Slots</h3>
+    <table>
+      <!-- Table to display the doctor's slots -->
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Hour</th>
+          <th>Edit</th>
+          <th>Cancel</th>
+          <!-- Add other table headers as needed -->
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let slot of slots">
+          <td>{{ slot.slotDate | date: 'yyyy-MM-dd' }}</td>
+          <td>{{ slot.slotHour }}</td>
+          <td><button (click)="openEditPopup(slot)">Edit</button></td>
+          <td><button (click)="cancelSlot(slot)">Cancel</button></td>
+          <!-- Display other slot properties as needed -->
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Add New Slot -->
+  <div>
+    <h3>Add New Slot</h3>
+    <form (submit)="addNewSlot()">
+      <label for="newSlotDate">Date:</label>
+      <input type="date" id="newSlotDate" name="newSlotDate" [(ngModel)]="newSlotDate" required>
+
+      <label for="newSlotHour">Hour:</label>
+      <input type="time" id="newSlotHour" name="newSlotHour" [(ngModel)]="newSlotHour" required>
+
+      <!-- Add other form fields as needed -->
+
+      <button type="submit">Add Slot</button>
+    </form>
+  </div>
+
+
+
+
+  <!-- Edit Slot Pop-up -->
+  <div *ngIf="isEditPopupVisible" class="popup popup-hidden">
+    <div class="popup-content">
+      <h3>Edit Slot</h3>
+      <!-- Inside your form for adding a new slot -->
+      <label for="newSlotDate">New Date:</label>
+      <input type="date" id="newSlotDate" name="newSlotDate" [(ngModel)]="newSlotDate" required>
+
+      <label for="newSlotHour">New Hour:</label>
+      <input type="time" id="newSlotHour" name="newSlotHour" [(ngModel)]="newSlotHour" required>
+
+
+      <button (click)="saveChanges()">Save Changes</button>
+      <button (click)="closePopup()">Cancel</button>
+    </div>
+  </div>
+</div>

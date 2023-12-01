@@ -1,0 +1,17 @@
+# Frontend Containerfile
+
+FROM docker.io/library/node
+
+LABEL description="Clinic Frontend image"
+
+ENV FRONTEND_SERVER_PORT=4200
+
+EXPOSE $FRONTEND_SERVER_PORT
+
+COPY ./frontend/ /opt/source-code
+
+WORKDIR /opt/source-code
+
+RUN npm install 
+
+CMD npm start --host=0.0.0.0 --port=4200 
