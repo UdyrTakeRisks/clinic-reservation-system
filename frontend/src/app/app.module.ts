@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
+import { DatePipe } from '@angular/common';
+
 
 import { HttpClientModule } from '@angular/common/http'; // Import the UserService
 
@@ -26,7 +28,9 @@ import { PatientPageComponent } from './patient-page/patient-page.component';
     FormsModule,
     HttpClientModule,
   ],
-  providers: [], // Add the UserService to providers
+  providers: [
+    DatePipe,
+  ], // Add the UserService to providers
   bootstrap: [AppComponent]
 })
 export class AppModule { }
