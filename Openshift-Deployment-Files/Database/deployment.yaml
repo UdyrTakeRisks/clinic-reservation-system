@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-pods
+  template:
+    metadata:
+      labels:
+        app: db-pods
+    spec:
+      containers:
+      - name: clinic-db-app
+        image: ahmeddalii/clinic-mysql-db:2.0
+        ports:
+        - containerPort: 3306
+        env:        
+        - name: MYSQL_USER
+          value: 'ahmed'
+        - name: MYSQL_PASSWORD
+          value: '123'
+        - name: MYSQL_DATABASE
+          value: 'clinicdb'
+        - name: MYSQL_ROOT_PASSWORD
+          value: '123'
+        
