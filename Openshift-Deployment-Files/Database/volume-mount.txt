@@ -1,0 +1,7 @@
+volumeMounts:
+        - name: clinic-vol
+          mountPath: /var/lib/mysql/data
+      volumes:
+      - name: clinic-vol
+        hostPath:
+          path: /home/ahmed/.local/share/containers/storage/volumes/clinic-vol/_data
