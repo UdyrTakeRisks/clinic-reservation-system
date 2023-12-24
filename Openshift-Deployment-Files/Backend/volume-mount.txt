@@ -1,0 +1,7 @@
+ volumeMounts:
+        - name: clinic-reservation-system
+          mountPath: /opt/source-code
+      volumes:
+      - name: clinic-reservation-system
+        hostPath:
+          path: /home/ahmed/.local/share/containers/storage/volumes/clinic-reservation-system/_data

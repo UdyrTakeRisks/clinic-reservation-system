@@ -1,0 +1,7 @@
+   volumeMounts:
+        - name: rabbitmq-vol
+          mountPath: /var/lib/rabbitmq
+      volumes:
+      - name: rabbitmq-vol
+        hostPath:
+          path: /home/ahmed/.local/share/containers/storage/volumes/rabbitmq-vol/_data

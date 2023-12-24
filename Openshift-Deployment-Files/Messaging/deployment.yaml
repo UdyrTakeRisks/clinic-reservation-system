@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mq-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mq-pods
+  # strategy: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: mq-pods
+    spec:
+      containers:
+      - name: clinic-rabbitmq
+        image: ahmeddalii/clinic-messaging-mq:2.0
+        ports:
+        - containerPort: 5672
+     
