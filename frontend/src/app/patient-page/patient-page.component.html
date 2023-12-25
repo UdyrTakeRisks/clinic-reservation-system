@@ -1,0 +1,96 @@
+<!-- patient-page.component.html -->
+
+<div class="patient-page-container">
+  <h2>{{ welcomeMessage }}</h2>
+  <h3>Your Appointments</h3>
+
+  <div class="patient-page-container">
+    <h2>{{ welcomeMessage }}</h2>
+    <h3>Your Appointments</h3>
+
+    <!-- Table to display all patient appointments -->
+    <table>
+      <thead>
+        <tr>
+          <th>Doctor</th>
+          <th>Date</th>
+          <th>Hour</th>
+          <th>Edit</th>
+          <th>Cancel</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let appointment of patientAppointments">
+          <td>{{ appointment.name }}</td>
+          <td>{{ appointment.slotDate | date: 'yyyy-MM-dd' }}</td>
+          <td>{{ appointment.slotHour }}</td>
+          <td>
+            <button (click)="openEditPopup(appointment)">Edit</button>
+          </td>
+          <td>
+            <button (click)="cancelSlot(appointment)">Cancel</button>
+          </td>
+          <!-- Display other appointment properties as needed -->
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- Add/Edit Appointment Popup -->
+  <div *ngIf="isEditPopupVisible" class="popup popup-visible">
+    <div class="popup-content">
+      <label for="editDoctorSelect">Choose a Doctor:</label>
+      <select id="editDoctorSelect" name="editDoctorSelect" [(ngModel)]="selectedEditDoctor"
+        (change)="onEditDoctorChange()" required>
+        <option value="" disabled>Select a Doctor</option>
+        <!-- Populate the dropdown with doctor names -->
+        <option *ngFor="let doctor of doctorNames" [value]="doctor">
+          {{ doctor }}
+        </option>
+      </select>
+
+      <label for="editSlotSelect">Choose a Slot:</label>
+      <select id="editSlotSelect" name="editSlotSelect" [(ngModel)]="selectedEditSlot" required>
+        <option value="" disabled>Select a Slot</option>
+        <!-- Display available slots -->
+        <ng-container *ngIf="availableSlots.length > 0; else noSlots">
+          <option *ngFor="let slot of availableSlots" [ngValue]="{ date: slot.date, hour: slot.hour }">
+            {{ slot.date }} at {{ slot.hour }}
+          </option>
+        </ng-container>
+      </select>
+
+      <button (click)="saveChanges()">Save Changes</button>
+      <button (click)="closePopup()">Cancel</button>
+    </div>
+  </div>
+
+  <div>
+    <h3>Create a New Appointment</h3>
+    <label for="doctorSelect">Choose a Doctor:</label>
+    <select id="doctorSelect" name="doctorSelect" [(ngModel)]="selectedDoctor" (change)="onDoctorChange()" required>
+      <option value="" disabled>Select a Doctor</option>
+      <!-- Populate the dropdown with doctor names -->
+      <option *ngFor="let doctor of doctorNames" [value]="doctor">
+        {{ doctor }}
+      </option>
+    </select>
+
+    <label for="slotSelect">Choose a Slot:</label>
+    <select id="slotSelect" name="slotSelect" [(ngModel)]="selectedSlot" required>
+      <option value="" disabled>Select a Slot</option>
+      <!-- Display available slots or a message -->
+      <ng-container *ngIf="availableSlots.length > 0; else noSlots">
+        <option *ngFor="let slot of availableSlots" [ngValue]="{ date: slot.date, hour: slot.hour }">
+          {{ slot.date }} at {{ slot.hour }}
+        </option>
+      </ng-container>
+      <ng-template #noSlots>
+        <option value="" disabled>No Available Slots</option>
+      </ng-template>
+    </select>
+
+    <button type="button" (click)="createAppointment()">Create Appointment</button>
+  </div>
+</div>
