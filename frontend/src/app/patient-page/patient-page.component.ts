@@ -283,7 +283,7 @@ export class PatientPageComponent implements OnInit {
     console.log('Request Data:', requestData);
 
     // Make a PUT request to update the selected patient appointment
-    const apiUrl = environment + '/clinic/update/patientAppointment';
+    const apiUrl = environment.environmenturl + '/clinic/update/patientAppointment';
     this.http.put(apiUrl, requestData).subscribe(
       (response: any) => {
         console.log('Update Appointment Response:', response);
