@@ -2,7 +2,7 @@ FROM node:16.14
 WORKDIR /app
 COPY ./frontend/package*.json ./
 RUN npm install
-
+# Added npm permissions
 RUN if [ ! -d "/.npm" ]; then mkdir /.npm; fi
 RUN if [ ! -d "/app/.angular" ]; then mkdir /app/.angular; fi
 
