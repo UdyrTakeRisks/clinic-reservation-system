@@ -12,7 +12,7 @@ EXPOSE $BACKEND_SERVER_PORT
 
 RUN pip install flask==2.3.3 flask-mysql flask-cors pika
 
-COPY clinic-reservation-system/ /opt/source-code	
+COPY Pipelines/Backend/clinic-reservation-system/ /opt/source-code	
 
 # ENTRYPOINT FLASK_APP=/opt/source-code/app.py flask run
 
