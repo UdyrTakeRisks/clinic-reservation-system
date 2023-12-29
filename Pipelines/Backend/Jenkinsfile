@@ -21,7 +21,7 @@ pipeline {
         stage('CD') {
             steps {
                sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ahmeddalii --password-stdin"
-               sh "docker run -d --name clinic-backend-app -p 5000:5000 -e BACKEND_URL=0.0.0.0 -e BACKEND_SERVER_PORT=5000 -e DB_USER=ahmed -e DB_PASS=123 -e DB_NAME=clinicdb -e DB_HOST=127.0.0.1 -e MQ_HOST=127.0.0.1 ahmeddalii/clinic-backend:3.0"
+               sh "docker run -d --name clinic-backend-app -p 5000:5000 -e BACKEND_URL=0.0.0.0 -e BACKEND_SERVER_PORT=5000 -e DB_USER=ahmed -e DB_PASS=123 -e DB_NAME=clinicdb -e DB_HOST=172.17.0.4 -e MQ_HOST=172.17.0.3 ahmeddalii/clinic-backend:3.0"
             }
         }
     }  
