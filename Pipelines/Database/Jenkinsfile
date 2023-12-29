@@ -1,0 +1,28 @@
+pipeline {
+
+    agent any
+    
+    environment{
+        DOCKERHUB_CREDENTIALS=credentials('docker-credentials-from-jenkins')
+    }
+    
+    stages {
+    
+        stage('CI') {
+            steps {
+               sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ahmeddalii --password-stdin"
+               sh "pwd"
+               sh "ls"
+               sh "docker build -f Dockerfile -t ahmeddalii/clinic-mysql-db:3.0 ."
+               sh "docker push ahmeddalii/clinic-mysql-db:3.0"
+            }
+        }
+        
+        stage('CD') {
+            steps {
+               sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ahmeddalii --password-stdin"
+               sh "docker run -d --name clinic-db-app -p 3306:3306 -e MYSQL_USER='ahmed' -e MYSQL_PASSWORD='123' -e MYSQL_DATABASE='clinicdb' -e MYSQL_ROOT_PASSWORD='123' -v clinic-vol:/var/lib/mysql/data ahmeddalii/clinic-mysql-db:3.0"
+            }
+        }
+    }  
+}

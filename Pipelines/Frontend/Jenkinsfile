@@ -1,0 +1,28 @@
+pipeline {
+
+    agent any
+    
+    environment{
+        DOCKERHUB_CREDENTIALS=credentials('docker-credentials-from-jenkins')
+    }
+    
+    stages {
+    
+        stage('CI') {
+            steps {
+               sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ahmeddalii --password-stdin"
+               sh "pwd"
+               sh "ls"
+               sh "docker build -f Dockerfile -t ahmeddalii/clinic-frontend:3.0 ."
+               sh "docker push ahmeddalii/clinic-frontend:3.0"
+            }
+        }
+        
+        stage('CD') {
+            steps {
+               sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ahmeddalii --password-stdin"
+               sh "docker run -d --name clinic-frontend-app -p 4200:4200 ahmeddalii/clinic-frontend:3.0"
+            }
+        }
+    }  
+}
