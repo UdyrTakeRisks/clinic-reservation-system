@@ -9,7 +9,7 @@ ENV FRONTEND_URL=0.0.0.0
 
 EXPOSE $FRONTEND_SERVER_PORT
 
-COPY frontend/ /opt/source-code
+COPY Pipelines/Frontend/frontend/ /opt/source-code
 
 WORKDIR /opt/source-code
 
