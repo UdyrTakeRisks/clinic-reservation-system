@@ -11,6 +11,7 @@ pipeline {
         stage('CI') {
             steps {
                sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ahmeddalii --password-stdin"
+               sh "cd Pipelines/Messaging"
                sh "pwd"
                sh "ls"
                sh "docker build -f Dockerfile -t ahmeddalii/clinic-messaging-mq:3.0 ."
