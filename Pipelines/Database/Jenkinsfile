@@ -13,7 +13,7 @@ pipeline {
                sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ahmeddalii --password-stdin"
                sh "pwd"
                sh "ls"
-               sh "docker build -f Dockerfile -t ahmeddalii/clinic-mysql-db:3.0 ."
+               sh "docker build -f Pipelines/Database/Dockerfile -t ahmeddalii/clinic-mysql-db:3.0 ."
                sh "docker push ahmeddalii/clinic-mysql-db:3.0"
             }
         }
