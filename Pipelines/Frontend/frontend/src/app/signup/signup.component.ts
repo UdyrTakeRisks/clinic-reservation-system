@@ -23,10 +23,10 @@ export class SignupComponent {
     // Conditionally construct the API URL based on userType
     let apiUrl = '';
     if (this.userType === 'doctor') {
-      apiUrl = environment.environmenturl + '/clinic/signup/doctor';
+      apiUrl = '127.0.0.1:5000/clinic/signup/doctor';
     } else if (this.userType === 'patient') {
       // Add conditions for other user types if needed
-      apiUrl = environment.environmenturl + '/clinic/signup/patient';
+      apiUrl = '127.0.0.1:5000/clinic/signup/patient';
     }
 
     // Create the request body
